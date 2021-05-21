@@ -25,7 +25,7 @@ namespace Entities.Interfaces
         public List<Produto> ItensFaixaDeValores(decimal valIni, decimal valFin);
 
         //relatorio de itens por Status do produto de um determinado usuario
-        public List<Produto> ItensPorStatusUsu(long usu);
+        public List<Produto> ItensPorStatusUsu(String usu);
 
         ////relatorio do total de vendas em um determinado periodo de tempo
         public List<String> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin);

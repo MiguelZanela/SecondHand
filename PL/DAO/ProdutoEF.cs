@@ -4,39 +4,39 @@ using PL.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PL.DAO
 {
     public class ProdutoEF : IProdutoDAO
     {
-        private readonly SecondHandContext context;
+        private readonly SecondHandContext _context;
 
-        //construtor produtos entity framework
-        public ProdutoEF()
+        //construtor produtos entity framework        
+        
+        public ProdutoEF(SecondHandContext context)
         {
-            context = new SecondHandContext();
+            _context = context;
         }
+        
 
         //recebe um produto novo e salva no bando de dados
         public void CadastroNovoProduto(Produto prod)
         {
-            context.Produtos.Add(prod);
-            context.SaveChanges();
+            _context.Produtos.Add(prod);
+            _context.SaveChanges();
         }
 
         //retorna uma lista com todos os produtos no bando de dados
         public List<Produto> ListaDeProdutos()
         {
-            List<Produto> prod = context.Produtos.ToList();
+            List<Produto> prod = _context.Produtos.ToList();
             return prod;
         }
 
         //recebe uma categoria e retorna todos os produtos dessa categoria
         public List<Produto> ItensPorCategoria(string cat)
         {
-            var consulta1 = context.Produtos
+            var consulta1 = _context.Produtos
                             .Where(p => p.Categoria.ToUpper() == cat.ToUpper())
                             .Select(p => p);
 
@@ -46,7 +46,7 @@ namespace PL.DAO
         //recebe uma categoria e uma palavra chave e retorna uma lista desses produtos
         public List<Produto> ItensPalChavCat(string palChave, string cat)
         {
-            var consulta2 = context.Produtos
+            var consulta2 = _context.Produtos
                             .Where(p => p.Categoria.ToUpper() == cat.ToUpper())
                             .Where(p => p.Name.ToUpper().Contains(palChave.ToUpper()) || p.Descricao.ToUpper().Contains(palChave.ToUpper()))
                             .Select(p => p);
@@ -57,7 +57,7 @@ namespace PL.DAO
         //recebe dois valores e retorna uma lista de produtos dentro desses valores
         public List<Produto> ItensFaixaDeValores(decimal valIni, decimal valFin)
         {
-            var consulta3 = context.Produtos
+            var consulta3 = _context.Produtos
                             .Where(p => p.Estado == StatusProduto.Status.Disponivel)
                             .Where(p => p.Valor >= valIni && p.Valor <= valFin)
                             .Select(p => p);
@@ -66,9 +66,9 @@ namespace PL.DAO
         }
 
         //recebe um id de usuario e retorna uma lista de todos os produtos ordenados pelo status
-        public List<Produto> ItensPorStatusUsu(long usu)
+        public List<Produto> ItensPorStatusUsu(String usu)
         {
-            var consulta4 = context.Produtos
+            var consulta4 = _context.Produtos
                             .Where(p => p.UsuarioID == usu)
                             .Select(p => p).OrderByDescending(e => e.Estado);
 
@@ -79,7 +79,7 @@ namespace PL.DAO
         //bem como o total da soma do valor desses produtos
         public List<String> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
         {
-            var consulta5 = from p in context.Produtos
+            var consulta5 = from p in _context.Produtos
                             where p.Estado == StatusProduto.Status.Vendido
                             where p.DataVenda >= dtIni && p.DataVenda <= dtFin
                             select p.Valor;

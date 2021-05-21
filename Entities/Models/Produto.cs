@@ -42,7 +42,7 @@ namespace Entities.Models
 
         [Required]
         [Display(Name = "ID do Usuario")]
-        public long UsuarioID { get; set; }
+        public String UsuarioID { get; set; }
 
         [Required]
         [Display(Name = "Categoria")]
@@ -51,6 +51,5 @@ namespace Entities.Models
 
         public virtual Categoria CategoriaID { get; set; }
 
-        public virtual Usuario Usuario { get; set; }
     }
 }

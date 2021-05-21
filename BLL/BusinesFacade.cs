@@ -8,56 +8,64 @@ namespace BLL
 {
     public class BusinesFacade
     {
-        private readonly IProdutoDAO dao;
+        private readonly IProdutoDAO _dao;
 
         //construtor busines facade
+        /*
         public BusinesFacade()
         {
-            this.dao = new ProdutoEF();
+            _dao = new ProdutoEF();
+        }*/
+
+        
+        public BusinesFacade(IProdutoDAO dao)
+        {
+            _dao = dao;
         }
+        
 
         #region consultas em produtos
 
         //Todos os produtos do banco:
         public List<Produto> ListaDeProdutos()
         {
-            return dao.ListaDeProdutos();
+            return _dao.ListaDeProdutos();
         }
 
         //Salva um produto novo no banco
         public void CadNovoProduto(Produto prod)
         {
-            dao.CadastroNovoProduto(prod);
+            _dao.CadastroNovoProduto(prod);
         }
 
         //relatorio de itens por uma determinada categoria
         public List<Produto> ItensPorCategoria(String cat)
         {
-            return dao.ItensPorCategoria(cat);
+            return _dao.ItensPorCategoria(cat);
         }
 
         //relatorio de itens por uma determinada categoria e palavra
         public List<Produto> ItensPalChavCat(String palChave, String cat)
         {
-            return dao.ItensPalChavCat(palChave, cat);
+            return _dao.ItensPalChavCat(palChave, cat);
         }
 
         //relatorio de itens por uma determinada faixa de valores
         public List<Produto> ItensFaixaDeValores(decimal valIni, decimal valFin)
         {
-            return dao.ItensFaixaDeValores(valIni, valFin);
+            return _dao.ItensFaixaDeValores(valIni, valFin);
         }
 
         //relatorio de itens por um determinado usuario
-        public List<Produto> ItensPorStatusUsu(long usu)
+        public List<Produto> ItensPorStatusUsu(String usu)
         {
-            return dao.ItensPorStatusUsu(usu);
+            return _dao.ItensPorStatusUsu(usu);
         }
 
         ////relatorio do total de vendas em um determinado periodo de tempo
         public List<String> TotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
         {
-            return dao.NroTotalVendaPeriodo(dtIni, dtFin);
+            return _dao.NroTotalVendaPeriodo(dtIni, dtFin);
         }
         #endregion
 

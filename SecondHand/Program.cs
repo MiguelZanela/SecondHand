@@ -1,6 +1,9 @@
 ﻿using BLL;
+using Entities.Interfaces;
 using Entities.Models;
+using Ninject;
 using PL.Context;
+using PL.DAO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +12,18 @@ namespace ConsoleTests
 {
     class Program
     {
+
         static void Main(string[] args)
         {
 
-            SecondHandContext context = new SecondHandContext();
-            BusinesFacade _bll = new BusinesFacade();
+            SecondHandContext context = new();
 
+            //injetando dependencia com ninject
+            Ninject.IKernel inject = new StandardKernel();
+            inject.Bind<IProdutoDAO>().To<ProdutoEF>();
+            var obj = inject.Get<BusinesFacade>();
+
+            BusinesFacade _bll = obj;
 
             #region Criação
 
@@ -26,7 +35,7 @@ namespace ConsoleTests
                 DataEntrada = new DateTime(2020, 04, 01),
                 Estado = StatusProduto.Status.Disponivel,
                 Valor = 200.0m,
-                UsuarioID = 1
+                UsuarioID = "c0f2a95a-d441-423f-b369-746d098c18a9"
             };
 
             _bll.CadNovoProduto(produtoNovo);
@@ -100,7 +109,7 @@ namespace ConsoleTests
 
 
             Console.WriteLine("4 - Itens anunciados por um determinado vendedor agrupados pelo status da venda\n");
-            int vend = 2;
+            String vend = "c0f2a95a-d441-423f-b369-746d098c18a9";
             Console.WriteLine("ID do vendedor: {0}\n", vend);
 
             foreach (Produto p in _bll.ItensPorStatusUsu(vend))
