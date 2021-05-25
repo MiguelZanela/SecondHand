@@ -181,7 +181,8 @@ namespace PL.Migrations
                     Valor = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DataEntrada = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataVenda = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UsuarioIDVendedor = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UsuarioIDComprador = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Categoria = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoriaId = table.Column<int>(type: "int", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -201,6 +202,27 @@ namespace PL.Migrations
                         principalTable: "Categorias",
                         principalColumn: "CategoriaId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Imagem",
+                columns: table => new
+                {
+                    ImagemId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImageFile = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    ImageMimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProdutoId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Imagem", x => x.ImagemId);
+                    table.ForeignKey(
+                        name: "FK_Imagem_Produtos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Produtos",
+                        principalColumn: "ProdutoId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -243,6 +265,11 @@ namespace PL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Imagem_ProdutoId",
+                table: "Imagem",
+                column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Produtos_ApplicationUserId",
                 table: "Produtos",
                 column: "ApplicationUserId");
@@ -271,10 +298,13 @@ namespace PL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Produtos");
+                name: "Imagem");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Produtos");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

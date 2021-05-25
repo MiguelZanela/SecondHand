@@ -41,9 +41,11 @@ namespace SecondHandWeb
                 .AddEntityFrameworkStores<SecondHandContext>();
             services.AddControllersWithViews();
 
-            //Interface e repositorio
+            //Interface e repositorio injecao dependencia
             services.AddTransient<BusinesFacade, BusinesFacade>();
             services.AddTransient<IProdutoDAO, ProdutoEF>();
+            services.AddTransient<IImagemDAO, ImagemEF>();
+            services.AddTransient<IApplicationUserDAO, ApplicationUserEF>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

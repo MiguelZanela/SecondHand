@@ -39,10 +39,12 @@ namespace Entities.Models
         [Display(Name = "Data da Venda")]
         [DataType(DataType.Date)]
         public DateTime? DataVenda { get; set; }
+                
+        [Display(Name = "ID do Usuario Vendedor")]
+        public String UsuarioIDVendedor { get; set; }
 
-        [Required]
-        [Display(Name = "ID do Usuario")]
-        public String UsuarioID { get; set; }
+        [Display(Name = "ID do Usuario Comprador")]
+        public String UsuarioIDComprador { get; set; }
 
         [Required]
         [Display(Name = "Categoria")]
@@ -50,6 +52,7 @@ namespace Entities.Models
         public String Categoria { get; set; }
 
         public virtual Categoria CategoriaID { get; set; }
+        public virtual ICollection<Imagem> Imagens { get; set; }
 
     }
 }

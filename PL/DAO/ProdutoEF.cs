@@ -1,5 +1,7 @@
 ﻿using Entities.Interfaces;
 using Entities.Models;
+using Entities.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using PL.Context;
 using System;
 using System.Collections.Generic;
@@ -22,8 +24,19 @@ namespace PL.DAO
         //recebe um produto novo e salva no bando de dados
         public void CadastroNovoProduto(Produto prod)
         {
+            prod.Estado = StatusProduto.Status.Disponivel;
             _context.Produtos.Add(prod);
             _context.SaveChanges();
+        }
+
+        //recebe um id de produto e retorna o mesmo
+        public Produto ItemPorId(long ProdutoID)
+        {
+            var consulta1 = _context.Produtos
+                            .Include("Imagens")
+                            .FirstOrDefault(m => m.ProdutoId == ProdutoID);
+
+            return consulta1;
         }
 
         //retorna uma lista com todos os produtos no bando de dados
@@ -69,7 +82,7 @@ namespace PL.DAO
         public List<Produto> ItensPorStatusUsu(String usu)
         {
             var consulta4 = _context.Produtos
-                            .Where(p => p.UsuarioID == usu)
+                            .Where(p => p.UsuarioIDVendedor == usu)
                             .Select(p => p).OrderByDescending(e => e.Estado);
 
             return consulta4.ToList();
@@ -77,7 +90,7 @@ namespace PL.DAO
 
         //recebe duas datas e retorna o numero de itens vendidos
         //bem como o total da soma do valor desses produtos
-        public List<String> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
+        public List<TotalVendaPorPeriodo> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
         {
             var consulta5 = from p in _context.Produtos
                             where p.Estado == StatusProduto.Status.Vendido
@@ -86,20 +99,14 @@ namespace PL.DAO
 
             var consulta5_1 = from p in consulta5
                               group p by 1 into grp
-                              select new
+                              select new TotalVendaPorPeriodo
                               {
-                                  quanti = grp.Count(),
-                                  total = grp.Sum()
-                              };
-            List<String> result = new List<string>();
+                                  numVendasPeriodo = grp.Count(),
+                                  valorVendasPeriodo = grp.Sum()
+                              };            
 
-            foreach (var elem in consulta5_1)
-            {
-                result.Add("Quantidade de produtos vendidos: " + elem.quanti + "\n" +
-                           "Valor total dos itens vendidos: " + elem.total);
-            }
-
-            return result;
+            return consulta5_1.ToList();
         }
+        
     }
 }

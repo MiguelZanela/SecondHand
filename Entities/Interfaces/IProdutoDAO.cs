@@ -1,4 +1,5 @@
 ﻿using Entities.Models;
+using Entities.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace Entities.Interfaces
         //Salva um produto novo no banco
         public void CadastroNovoProduto(Produto prod);
 
+        //Recebe um ID de produto e retorna o mesmo
+        public Produto ItemPorId(long ProdutoID);
+
         //relatorio de itens por uma determinada categoria
         public List<Produto> ItensPorCategoria(String cat);
 
@@ -28,7 +32,7 @@ namespace Entities.Interfaces
         public List<Produto> ItensPorStatusUsu(String usu);
 
         ////relatorio do total de vendas em um determinado periodo de tempo
-        public List<String> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin);
+        public List<TotalVendaPorPeriodo> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin);
 
     }
 }

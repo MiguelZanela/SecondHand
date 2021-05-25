@@ -117,6 +117,29 @@ namespace PL.Migrations
                     b.ToTable("Categorias");
                 });
 
+            modelBuilder.Entity("Entities.Models.Imagem", b =>
+                {
+                    b.Property<int>("ImagemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("ImageFile")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ImageMimeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ProdutoId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ImagemId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.ToTable("Imagem");
+                });
+
             modelBuilder.Entity("Entities.Models.Produto", b =>
                 {
                     b.Property<long>("ProdutoId")
@@ -153,7 +176,10 @@ namespace PL.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<string>("UsuarioID")
+                    b.Property<string>("UsuarioIDComprador")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsuarioIDVendedor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -304,6 +330,17 @@ namespace PL.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Entities.Models.Imagem", b =>
+                {
+                    b.HasOne("Entities.Models.Produto", "Produto")
+                        .WithMany("Imagens")
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+                });
+
             modelBuilder.Entity("Entities.Models.Produto", b =>
                 {
                     b.HasOne("Entities.Models.ApplicationUser", null)
@@ -376,6 +413,11 @@ namespace PL.Migrations
             modelBuilder.Entity("Entities.Models.Categoria", b =>
                 {
                     b.Navigation("Produtos");
+                });
+
+            modelBuilder.Entity("Entities.Models.Produto", b =>
+                {
+                    b.Navigation("Imagens");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,7 @@
 ﻿using BLL;
 using Entities.Interfaces;
 using Entities.Models;
+using Entities.ViewModels;
 using Ninject;
 using PL.Context;
 using PL.DAO;
@@ -35,7 +36,7 @@ namespace ConsoleTests
                 DataEntrada = new DateTime(2020, 04, 01),
                 Estado = StatusProduto.Status.Disponivel,
                 Valor = 200.0m,
-                UsuarioID = "c0f2a95a-d441-423f-b369-746d098c18a9"
+                UsuarioIDVendedor = "c0f2a95a-d441-423f-b369-746d098c18a9"
             };
 
             _bll.CadNovoProduto(produtoNovo);
@@ -58,7 +59,7 @@ namespace ConsoleTests
             {
                 Console.WriteLine("{0}  {1}  {2}  {3}  {4}  {5}  {6}",
                                     p.ProdutoId, p.Name, p.Descricao, p.Estado,
-                                    p.Valor, p.UsuarioID, p.Categoria);
+                                    p.Valor, p.UsuarioIDVendedor, p.Categoria);
             }
             Console.WriteLine("\n\n");
 
@@ -126,9 +127,10 @@ namespace ConsoleTests
             DateTime dtFin = new DateTime(2020, 05, 01);
             Console.WriteLine("Entre as datas de '{0}' e '{1}'\n", dtIni, dtFin);
 
-            foreach (String p in _bll.TotalVendaPeriodo(dtIni, dtFin))
+            foreach (TotalVendaPorPeriodo i in _bll.TotalVendaPeriodo(dtIni, dtFin))
             {
-                Console.WriteLine(p);
+                Console.WriteLine("Número total de itens vendidos: {0}\nValor total destas vendas: {1}\n",
+                                    i.numVendasPeriodo, i.valorVendasPeriodo);
             }
             Console.WriteLine("\n\n");
 

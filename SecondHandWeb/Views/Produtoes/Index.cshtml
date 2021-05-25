@@ -31,7 +31,10 @@
                 @Html.DisplayNameFor(model => model.DataVenda)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UsuarioID)
+                @Html.DisplayNameFor(model => model.UsuarioIDVendedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UsuarioIDComprador)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Categoria)
@@ -61,7 +64,10 @@
                 @Html.DisplayFor(modelItem => item.DataVenda)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UsuarioID)
+                @Html.DisplayNameFor(model => model.UsuarioIDVendedor)
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.UsuarioIDComprador)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Categoria)

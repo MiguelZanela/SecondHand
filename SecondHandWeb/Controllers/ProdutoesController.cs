@@ -11,6 +11,8 @@ using BLL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace SecondHandWeb.Controllers
 {
@@ -39,15 +41,14 @@ namespace SecondHandWeb.Controllers
 
         // GET: Produtoes/Details/5
         [AllowAnonymous]
-        public async Task<IActionResult> Details(long? id)
+        public IActionResult Details(long id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
 
-            var produto = await _context.Produtos
-                .FirstOrDefaultAsync(m => m.ProdutoId == id);
+            var produto = _businesFacade.ItemPorId((long)id);
             if (produto == null)
             {
                 return NotFound();
@@ -56,28 +57,34 @@ namespace SecondHandWeb.Controllers
             return View(produto);
         }
 
+        [Authorize]
         // GET: Produtoes/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize]
         // POST: Produtoes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProdutoId,Name,Descricao,Estado,Valor,DataEntrada,DataVenda,UsuarioID,Categoria")] Produto produto)
+        public async Task<IActionResult> Create([Bind("ProdutoId,Name,Descricao,Valor,DataEntrada,Categoria")] Produto produto)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(produto);
+                var usuario = await _userManager.GetUserAsync(HttpContext.User);
+                produto.UsuarioIDVendedor = _businesFacade.getUserID(usuario.UserName);
+
+                _businesFacade.CadNovoProduto(produto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(produto);
         }
 
+        [Authorize]
         // GET: Produtoes/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
@@ -94,6 +101,7 @@ namespace SecondHandWeb.Controllers
             return View(produto);
         }
 
+        [Authorize]
         // POST: Produtoes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -129,6 +137,7 @@ namespace SecondHandWeb.Controllers
             return View(produto);
         }
 
+        [Authorize]
         // GET: Produtoes/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
@@ -147,6 +156,7 @@ namespace SecondHandWeb.Controllers
             return View(produto);
         }
 
+        [Authorize]
         // POST: Produtoes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -163,9 +173,10 @@ namespace SecondHandWeb.Controllers
             return _context.Produtos.Any(e => e.ProdutoId == id);
         }
 
-        public async Task<IActionResult> dadosUsuario()
+        //dados do usuario
+        public async Task<IActionResult> DadosUsuario()
         {
-            var usuario = await _userManager.GetUserAsync(User);
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
 
             ViewBag.Id = usuario.Id;
             ViewBag.UserName = usuario.UserName;
@@ -173,5 +184,27 @@ namespace SecondHandWeb.Controllers
             return View();
 
         }
+
+        public ActionResult GetImage(int id)
+        {
+            Imagem im = _businesFacade.GetImagem(id);
+            if (im != null)
+            {
+                return File(im.ImageFile, im.ImageMimeType);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        
+        public IActionResult LoadFiles (long ProdutoId, List<IFormFile> files)
+        {
+            _businesFacade.CadImagem(ProdutoId, files);
+
+            return View("Details", _businesFacade.ItemPorId(ProdutoId));
+        }
+        
+
     }
 }
