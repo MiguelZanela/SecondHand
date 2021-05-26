@@ -19,7 +19,12 @@ namespace PL.DAO
         {
             _context = context;
         }
-        
+
+        //Recebe um id e informa se o produto existe ou nao
+        public Boolean existe(long ProdutoID)
+        {
+            return _context.Produtos.Any(e => e.ProdutoId == ProdutoID);
+        }
 
         //recebe um produto novo e salva no bando de dados
         public void CadastroNovoProduto(Produto prod)
@@ -27,6 +32,16 @@ namespace PL.DAO
             prod.Estado = StatusProduto.Status.Disponivel;
             _context.Produtos.Add(prod);
             _context.SaveChanges();
+        }
+
+        //relatorio de itens disponiveis para venda
+        public List<Produto> ItensDisponiveis()
+        {
+            var consulta1 = _context.Produtos
+                            .Where(p => p.Estado == StatusProduto.Status.Disponivel)
+                            .Select(p => p);
+
+            return consulta1.ToList();
         }
 
         //recebe um id de produto e retorna o mesmo

@@ -38,10 +38,22 @@ namespace BLL
             _ProdutoDAO.CadastroNovoProduto(prod);
         }
 
+        //Recebe um id e informa se o produto existe ou nao
+        public Boolean existe(long ProdutoID)
+        {
+            return _ProdutoDAO.existe(ProdutoID);
+        }
+
         //Recebe um ID de produto e retorna o mesmo
         public Produto ItemPorId(long ProdutoID)
         {
             return _ProdutoDAO.ItemPorId(ProdutoID);
+        }
+
+        //relatorio de itens disponiveis para venda
+        public List<Produto> ItensDisponiveis()
+        {
+            return _ProdutoDAO.ItensDisponiveis();
         }
 
         //relatorio de itens por uma determinada categoria

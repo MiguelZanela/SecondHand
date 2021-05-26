@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,18 +12,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 
 namespace SecondHandWeb.Controllers
 {
-    public class ProdutoesController : Controller
+    public class MeusProdutosController : Controller
     {
         private readonly SecondHandContext _context;
         private readonly BusinesFacade _businesFacade;
         public readonly UserManager<ApplicationUser> _userManager;
         private IWebHostEnvironment _environment;
 
-        public ProdutoesController(SecondHandContext context, BusinesFacade businesFacade,
+        public MeusProdutosController(SecondHandContext context, BusinesFacade businesFacade,
                                    UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
         {
             _context = context;
@@ -32,11 +31,12 @@ namespace SecondHandWeb.Controllers
             _userManager = userManager;
         }
 
-        // GET: Produtoes
-        [AllowAnonymous]
+        // GET: MeusProdutos
         public async Task<IActionResult> Index()
         {
-            return View(_businesFacade.ItensDisponiveis());
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
+            String usu = _businesFacade.getUserID(usuario.UserName);
+            return View(_businesFacade.ItensPorStatusUsu(usu));
         }
 
         // GET: Produtoes/Details/5
@@ -197,14 +197,12 @@ namespace SecondHandWeb.Controllers
                 return NotFound();
             }
         }
-        
-        public IActionResult LoadFiles (long ProdutoId, List<IFormFile> files)
+
+        public IActionResult LoadFiles(long ProdutoId, List<IFormFile> files)
         {
             _businesFacade.CadImagem(ProdutoId, files);
 
             return View("Details", _businesFacade.ItemPorId(ProdutoId));
         }
-        
-
     }
 }

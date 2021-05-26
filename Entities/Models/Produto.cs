@@ -39,7 +39,8 @@ namespace Entities.Models
         [Display(Name = "Data da Venda")]
         [DataType(DataType.Date)]
         public DateTime? DataVenda { get; set; }
-                
+
+        [Required]
         [Display(Name = "ID do Usuario Vendedor")]
         public String UsuarioIDVendedor { get; set; }
 

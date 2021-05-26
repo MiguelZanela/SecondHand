@@ -19,6 +19,12 @@ namespace Entities.Interfaces
         //Recebe um ID de produto e retorna o mesmo
         public Produto ItemPorId(long ProdutoID);
 
+        //Recebe um id e informa se o produto existe ou nao
+        public Boolean existe(long ProdutoID);
+
+        //relatorio de itens disponiveis para venda
+        public List<Produto> ItensDisponiveis();
+
         //relatorio de itens por uma determinada categoria
         public List<Produto> ItensPorCategoria(String cat);
 
