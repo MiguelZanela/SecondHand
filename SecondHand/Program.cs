@@ -32,7 +32,7 @@ namespace ConsoleTests
             {
                 Name = "prod teste",
                 Descricao = "produto para testar a criação no bando de dados",
-                Categoria = "Tv",
+                CategoriaID = 1,
                 DataEntrada = new DateTime(2020, 04, 01),
                 Estado = StatusProduto.Status.Disponivel,
                 Valor = 200.0m,
@@ -69,7 +69,7 @@ namespace ConsoleTests
             #region Testando todas as consultas da entrega 1
 
             Console.WriteLine("1 - Itens a venda de uma determinada categoria:\n");
-            String cat = "Celular";
+            int cat = 2;
             Console.WriteLine("Categoria pesquisada: '{0}'\n", cat);
 
             foreach (Produto p in _bll.ItensPorCategoria(cat))
@@ -82,7 +82,7 @@ namespace ConsoleTests
 
 
             Console.WriteLine("2 - Itens a venda dada uma palavra chave e uma categoria:\n");
-            cat = "TV";
+            cat = 2;
             String palChave = "tv";
             Console.WriteLine("Categoria pesquisada: '{0}', Palavra chave: {1}\n", cat, palChave);
 

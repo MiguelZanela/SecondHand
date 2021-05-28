@@ -44,15 +44,21 @@ namespace Entities.Models
         [Display(Name = "ID do Usuario Vendedor")]
         public String UsuarioIDVendedor { get; set; }
 
+        [Required]
+        [Display(Name = "Nome do Vendedor")]
+        public String NomeVendedor { get; set; }
+
         [Display(Name = "ID do Usuario Comprador")]
         public String UsuarioIDComprador { get; set; }
+                
+        [Display(Name = "Nome do Comprador")]
+        public String NomeComprador { get; set; }
 
         [Required]
         [Display(Name = "Categoria")]
-        [RegularExpression(@"^[A-Z]+[a-zA-Z]*$")]
-        public String Categoria { get; set; }
+        public int CategoriaID { get; set; }
 
-        public virtual Categoria CategoriaID { get; set; }
+        public virtual Categoria Categoria { get; set; }
         public virtual ICollection<Imagem> Imagens { get; set; }
 
     }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using PL.DAO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BLL
 {
@@ -13,14 +14,17 @@ namespace BLL
         private readonly IProdutoDAO _ProdutoDAO;
         private readonly IImagemDAO _ImagemDAO;
         private readonly IApplicationUserDAO _ApplicationUserDAO;
+        private readonly ICategoriaDAO _CategoriaDAO;
 
         //construtor busines facade
 
-        public BusinesFacade(IProdutoDAO Pdao, IImagemDAO Idao, IApplicationUserDAO Adao)
+        public BusinesFacade(IProdutoDAO Pdao, IImagemDAO Idao, 
+                                IApplicationUserDAO Adao, ICategoriaDAO Cdao)
         {
             _ProdutoDAO = Pdao;
             _ImagemDAO = Idao;
             _ApplicationUserDAO = Adao;
+            _CategoriaDAO = Cdao;
         }
         
 
@@ -32,10 +36,22 @@ namespace BLL
             return _ProdutoDAO.ListaDeProdutos();
         }
 
+        //retorna uma lista IQuerable com todos os produtos disponiveis para venda no banco de dados
+        public IQueryable<Produto> IQuerDeProdutosDisponiveis()
+        {
+            return _ProdutoDAO.IQuerDeProdutosDisponiveis();
+        }
+
         //Salva um produto novo no banco
         public void CadNovoProduto(Produto prod)
         {
             _ProdutoDAO.CadastroNovoProduto(prod);
+        }
+
+        //Recebe um id e deleta o produto
+        public void deletaProduto(long ProdutoID)
+        {
+            _ProdutoDAO.deletaProduto(ProdutoID);
         }
 
         //Recebe um id e informa se o produto existe ou nao
@@ -57,13 +73,13 @@ namespace BLL
         }
 
         //relatorio de itens por uma determinada categoria
-        public List<Produto> ItensPorCategoria(String cat)
+        public List<Produto> ItensPorCategoria(int cat)
         {
             return _ProdutoDAO.ItensPorCategoria(cat);
         }
 
         //relatorio de itens por uma determinada categoria e palavra
-        public List<Produto> ItensPalChavCat(String palChave, String cat)
+        public List<Produto> ItensPalChavCat(String palChave, int cat)
         {
             return _ProdutoDAO.ItensPalChavCat(palChave, cat);
         }
@@ -85,6 +101,13 @@ namespace BLL
         {
             return _ProdutoDAO.NroTotalVendaPeriodo(dtIni, dtFin);
         }
+
+        //recebe um produto e salva as modificacoes
+        public void editProduto(Produto prod)
+        {
+            _ProdutoDAO.editProduto(prod);
+        }
+
         #endregion
 
         #region consultas em imagem
@@ -99,16 +122,33 @@ namespace BLL
         public Imagem GetImagem(int ImagemId)
         {
             return _ImagemDAO.GetImagem(ImagemId);
+        }              
+        
+
+            #endregion
+
+        #region consultas em application user
+
+            //retorna o id de um usuario
+            public String getUserID(String userName)
+        {
+            return _ApplicationUserDAO.getUserID(userName);
         }
 
         #endregion
 
-        #region consultas em application user
+        #region consultas em categorias
 
-        //retorna o id de um usuario
-        public String getUserID(String userName)
+        //retorna o nome de todas as categorias de produtos cadastrados
+        public IQueryable<String> categoriasNomes()
         {
-            return _ApplicationUserDAO.getUserID(userName);
+            return _CategoriaDAO.categoriasNomes();
+        }
+
+        //retorna um IEnumerable de categorias
+        public IEnumerable<Categoria> categoriasIEnumerable()
+        {
+            return _CategoriaDAO.categoriasIEnumerable();
         }
 
         #endregion

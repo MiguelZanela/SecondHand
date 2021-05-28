@@ -17,20 +17,21 @@ namespace SecondHandWeb.Controllers
 {
     public class MeusProdutosController : Controller
     {
-        private readonly SecondHandContext _context;
         private readonly BusinesFacade _businesFacade;
+        private readonly SecondHandContext _ct;
         public readonly UserManager<ApplicationUser> _userManager;
         private IWebHostEnvironment _environment;
 
-        public MeusProdutosController(SecondHandContext context, BusinesFacade businesFacade,
+        public MeusProdutosController(BusinesFacade businesFacade, SecondHandContext ff,
                                    UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
-        {
-            _context = context;
+        {           
             _businesFacade = businesFacade;
             _environment = environment;
             _userManager = userManager;
+            _ct = ff;
         }
 
+        [Authorize]
         // GET: MeusProdutos
         public async Task<IActionResult> Index()
         {
@@ -39,7 +40,8 @@ namespace SecondHandWeb.Controllers
             return View(_businesFacade.ItensPorStatusUsu(usu));
         }
 
-        // GET: Produtoes/Details/5
+        [Authorize]
+        // GET: MeusProdutos/Details/5
         [AllowAnonymous]
         public IActionResult Details(long id)
         {
@@ -58,9 +60,10 @@ namespace SecondHandWeb.Controllers
         }
 
         [Authorize]
-        // GET: Produtoes/Create
+        // GET: MeusProdutos/Create
         public IActionResult Create()
         {
+            ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name");
             return View();
         }
 
@@ -70,7 +73,7 @@ namespace SecondHandWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProdutoId,Name,Descricao,Valor,DataEntrada,Categoria")] Produto produto)
+        public async Task<IActionResult> Create([Bind("Name,Descricao,Valor,DataEntrada,CategoriaId")] Produto produto)
         {
             if (ModelState.IsValid)
             {
@@ -78,14 +81,14 @@ namespace SecondHandWeb.Controllers
                 produto.UsuarioIDVendedor = _businesFacade.getUserID(usuario.UserName);
 
                 _businesFacade.CadNovoProduto(produto);
-                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name", produto.CategoriaID);
             return View(produto);
         }
 
         [Authorize]
-        // GET: Produtoes/Edit/5
+        // GET: MeusProdutos/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -93,7 +96,7 @@ namespace SecondHandWeb.Controllers
                 return NotFound();
             }
 
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = _businesFacade.ItemPorId((long)id);
             if (produto == null)
             {
                 return NotFound();
@@ -102,7 +105,7 @@ namespace SecondHandWeb.Controllers
         }
 
         [Authorize]
-        // POST: Produtoes/Edit/5
+        // POST: MeusProdutos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -118,8 +121,7 @@ namespace SecondHandWeb.Controllers
             {
                 try
                 {
-                    _context.Update(produto);
-                    await _context.SaveChangesAsync();
+                    _businesFacade.editProduto(produto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -138,7 +140,7 @@ namespace SecondHandWeb.Controllers
         }
 
         [Authorize]
-        // GET: Produtoes/Delete/5
+        // GET: MeusProdutos/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -146,8 +148,7 @@ namespace SecondHandWeb.Controllers
                 return NotFound();
             }
 
-            var produto = await _context.Produtos
-                .FirstOrDefaultAsync(m => m.ProdutoId == id);
+            var produto = _businesFacade.ItemPorId((long)id);
             if (produto == null)
             {
                 return NotFound();
@@ -157,14 +158,12 @@ namespace SecondHandWeb.Controllers
         }
 
         [Authorize]
-        // POST: Produtoes/Delete/5
+        // POST: MeusProdutos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
-            _context.Produtos.Remove(produto);
-            await _context.SaveChangesAsync();
+            _businesFacade.deletaProduto(id);
             return RedirectToAction(nameof(Index));
         }
 

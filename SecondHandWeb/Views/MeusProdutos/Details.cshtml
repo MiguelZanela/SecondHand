@@ -47,22 +47,10 @@
             @Html.DisplayFor(model => model.DataVenda)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UsuarioIDVendedor)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UsuarioIDVendedor)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UsuarioIDComprador)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UsuarioIDComprador)
-        </dd>
-        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Categoria)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Categoria)
+            @Html.DisplayFor(model => model.Categoria.Name)
         </dd>
     </dl>
 </div>

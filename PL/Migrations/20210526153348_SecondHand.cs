@@ -182,9 +182,10 @@ namespace PL.Migrations
                     DataEntrada = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataVenda = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UsuarioIDVendedor = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NomeVendedor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UsuarioIDComprador = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Categoria = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoriaId = table.Column<int>(type: "int", nullable: true),
+                    NomeComprador = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CategoriaID = table.Column<int>(type: "int", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -197,11 +198,11 @@ namespace PL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Produtos_Categorias_CategoriaId",
-                        column: x => x.CategoriaId,
+                        name: "FK_Produtos_Categorias_CategoriaID",
+                        column: x => x.CategoriaID,
                         principalTable: "Categorias",
                         principalColumn: "CategoriaId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -275,9 +276,9 @@ namespace PL.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Produtos_CategoriaId",
+                name: "IX_Produtos_CategoriaID",
                 table: "Produtos",
-                column: "CategoriaId");
+                column: "CategoriaID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -18,7 +18,7 @@ namespace PL.DAO
         public ProdutoEF(SecondHandContext context)
         {
             _context = context;
-        }
+        }        
 
         //Recebe um id e informa se o produto existe ou nao
         public Boolean existe(long ProdutoID)
@@ -26,11 +26,26 @@ namespace PL.DAO
             return _context.Produtos.Any(e => e.ProdutoId == ProdutoID);
         }
 
+        //Recebe um id e deleta o produto
+        public void deletaProduto(long ProdutoID)
+        {
+            var produto = _context.Produtos.Find(ProdutoID);
+            _context.Produtos.Remove(produto);
+            _context.SaveChanges();
+        }
+
         //recebe um produto novo e salva no bando de dados
         public void CadastroNovoProduto(Produto prod)
         {
             prod.Estado = StatusProduto.Status.Disponivel;
             _context.Produtos.Add(prod);
+            _context.SaveChanges();
+        }
+
+        //recebe um produto e salva as modificacoes
+        public void editProduto(Produto prod)
+        {
+            _context.Update(prod);
             _context.SaveChanges();
         }
 
@@ -54,28 +69,37 @@ namespace PL.DAO
             return consulta1;
         }
 
-        //retorna uma lista com todos os produtos no bando de dados
+        //retorna uma lista com todos os produtos no banco de dados
         public List<Produto> ListaDeProdutos()
         {
             List<Produto> prod = _context.Produtos.ToList();
             return prod;
         }
 
+        //retorna uma lista IQuerable com todos os produtos disponiveis para venda no banco de dados
+        public IQueryable<Produto> IQuerDeProdutosDisponiveis()
+        {
+            IQueryable<Produto> prod = _context.Produtos
+                                        .Where(p => p.Estado == StatusProduto.Status.Disponivel)
+                                        .Select(p => p);
+            return prod;
+        }
+
         //recebe uma categoria e retorna todos os produtos dessa categoria
-        public List<Produto> ItensPorCategoria(string cat)
+        public List<Produto> ItensPorCategoria(int cat)
         {
             var consulta1 = _context.Produtos
-                            .Where(p => p.Categoria.ToUpper() == cat.ToUpper())
+                            .Where(p => p.CategoriaID == cat)
                             .Select(p => p);
 
             return consulta1.ToList();
         }
 
         //recebe uma categoria e uma palavra chave e retorna uma lista desses produtos
-        public List<Produto> ItensPalChavCat(string palChave, string cat)
+        public List<Produto> ItensPalChavCat(string palChave, int cat)
         {
             var consulta2 = _context.Produtos
-                            .Where(p => p.Categoria.ToUpper() == cat.ToUpper())
+                            .Where(p => p.CategoriaID == cat)
                             .Where(p => p.Name.ToUpper().Contains(palChave.ToUpper()) || p.Descricao.ToUpper().Contains(palChave.ToUpper()))
                             .Select(p => p);
 

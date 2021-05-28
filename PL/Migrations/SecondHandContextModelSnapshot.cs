@@ -150,11 +150,7 @@ namespace PL.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Categoria")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CategoriaId")
+                    b.Property<int>("CategoriaID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DataEntrada")
@@ -176,6 +172,13 @@ namespace PL.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
+                    b.Property<string>("NomeComprador")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NomeVendedor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UsuarioIDComprador")
                         .HasColumnType("nvarchar(max)");
 
@@ -190,7 +193,7 @@ namespace PL.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("CategoriaId");
+                    b.HasIndex("CategoriaID");
 
                     b.ToTable("Produtos");
                 });
@@ -347,11 +350,13 @@ namespace PL.Migrations
                         .WithMany("Produtos")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("Entities.Models.Categoria", "CategoriaID")
+                    b.HasOne("Entities.Models.Categoria", "Categoria")
                         .WithMany("Produtos")
-                        .HasForeignKey("CategoriaId");
+                        .HasForeignKey("CategoriaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("CategoriaID");
+                    b.Navigation("Categoria");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

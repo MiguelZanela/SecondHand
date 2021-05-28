@@ -13,33 +13,66 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using SecondHandWeb.Models;
 
 namespace SecondHandWeb.Controllers
 {
     public class ProdutosDisponiveisController : Controller
     {
-        private readonly SecondHandContext _context;
         private readonly BusinesFacade _businesFacade;
         public readonly UserManager<ApplicationUser> _userManager;
         private IWebHostEnvironment _environment;
+        private readonly SecondHandContext cntc;
 
-        public ProdutosDisponiveisController(SecondHandContext context, BusinesFacade businesFacade,
+        public ProdutosDisponiveisController(BusinesFacade businesFacade, SecondHandContext cn,
                                    UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
         {
-            _context = context;
             _businesFacade = businesFacade;
             _environment = environment;
             _userManager = userManager;
+            cntc = cn;
         }
 
-        // GET: Produtoes
+        // GET: ProdutosDisponiveis
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string ProdutoCategoria, string searchString)
         {
-            return View(_businesFacade.ItensDisponiveis());
+            var categoriaQuery = _businesFacade.categoriasNomes();
+
+            /*
+            var categoriaQuery = (from m in cntc.Produtos
+                              orderby m.Categoria
+                              select m.Categoria.Name);
+            */
+
+            var produtos = _businesFacade.IQuerDeProdutosDisponiveis();
+
+            /*
+            var produtos = from m in cntc.Produtos
+                         select m;
+            */
+
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                produtos = produtos.Where(s => s.Name.ToUpper().Contains(searchString.ToUpper()));
+            }
+
+            if (!string.IsNullOrEmpty(ProdutoCategoria))
+            {
+                produtos = produtos.Where(x => x.Categoria.Name == ProdutoCategoria);
+            }
+
+            var produtoCategoriaVM = new ProdutoCategoriaViewModel
+            {
+                Categorias = new SelectList(await categoriaQuery.Distinct().ToListAsync()),
+                Produtos = await produtos.ToListAsync()
+            };
+
+            return View(produtoCategoriaVM);
         }
 
-        // GET: Produtoes/Details/5
+        // GET: ProdutosDisponiveis/Details/5
         [AllowAnonymous]
         public IActionResult Details(long id)
         {

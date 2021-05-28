@@ -46,6 +46,7 @@ namespace SecondHandWeb
             services.AddTransient<IProdutoDAO, ProdutoEF>();
             services.AddTransient<IImagemDAO, ImagemEF>();
             services.AddTransient<IApplicationUserDAO, ApplicationUserEF>();
+            services.AddTransient<ICategoriaDAO, CategoriaEF>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
