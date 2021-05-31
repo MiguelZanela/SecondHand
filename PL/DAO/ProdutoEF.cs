@@ -35,9 +35,14 @@ namespace PL.DAO
         }
 
         //recebe um produto novo e salva no bando de dados
-        public void CadastroNovoProduto(Produto prod)
+        public void CadastroNovoProduto(Produto prod, String usuarioName)
         {
+            var user = _context.Users.FirstOrDefault(x => x.UserName.Equals(usuarioName));
+
+            prod.UsuarioIDVendedor = user.Id;
+            prod.NomeVendedor = usuarioName;
             prod.Estado = StatusProduto.Status.Disponivel;
+
             _context.Produtos.Add(prod);
             _context.SaveChanges();
         }

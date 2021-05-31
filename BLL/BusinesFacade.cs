@@ -43,9 +43,9 @@ namespace BLL
         }
 
         //Salva um produto novo no banco
-        public void CadNovoProduto(Produto prod)
+        public void CadNovoProduto(Produto prod, String usu)
         {
-            _ProdutoDAO.CadastroNovoProduto(prod);
+            _ProdutoDAO.CadastroNovoProduto(prod, usu);
         }
 
         //Recebe um id e deleta o produto

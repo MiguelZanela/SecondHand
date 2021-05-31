@@ -17,7 +17,7 @@ namespace Entities.Interfaces
         public IQueryable<Produto> IQuerDeProdutosDisponiveis();
 
         //Salva um produto novo no banco
-        public void CadastroNovoProduto(Produto prod);
+        public void CadastroNovoProduto(Produto prod, String usuario);
 
         //Recebe um ID de produto e retorna o mesmo
         public Produto ItemPorId(long ProdutoID);

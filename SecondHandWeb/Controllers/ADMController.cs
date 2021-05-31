@@ -7,42 +7,46 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using PL.Context;
+using Microsoft.AspNetCore.Identity;
+using BLL;
+using Microsoft.AspNetCore.Hosting;
+using Entities.ViewModels;
 
 namespace SecondHandWeb.Controllers
 {
     public class ADMController : Controller
     {
+        private readonly BusinesFacade _businesFacade;
         private readonly SecondHandContext _context;
+        public readonly UserManager<ApplicationUser> _userManager;
+        private IWebHostEnvironment _environment;
 
-        public ADMController(SecondHandContext context)
+        public ADMController(BusinesFacade businesFacade, SecondHandContext context,
+                                   UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
         {
             _context = context;
+            _businesFacade = businesFacade;
+            _environment = environment;
+            _userManager = userManager;
         }
 
         // GET: ADM
         public async Task<IActionResult> Index()
         {
-            var secondHandContext = _context.Produtos.Include(p => p.Categoria);
-            return View(await secondHandContext.ToListAsync());
+            return View();
         }
 
-        // GET: ADM/Details/5
-        public async Task<IActionResult> Details(long? id)
+        // GET: ADM/NroTotalVendaPeriodo/
+        public async Task<IActionResult> TotalVendaPorPeriodo(DateTime dtIni, DateTime dtFin)
         {
-            if (id == null)
+            if (dtIni > dtFin)
             {
                 return NotFound();
             }
 
-            var produto = await _context.Produtos
-                .Include(p => p.Categoria)
-                .FirstOrDefaultAsync(m => m.ProdutoId == id);
-            if (produto == null)
-            {
-                return NotFound();
-            }
+            var TotalVendaPorPeriodo = _businesFacade.TotalVendaPeriodo(dtIni, dtFin);
 
-            return View(produto);
+            return View(TotalVendaPorPeriodo);
         }
 
         // GET: ADM/Create
@@ -61,6 +65,9 @@ namespace SecondHandWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+                //var usuario = await _userManager.GetUserAsync(HttpContext.User);
+                //produto.UsuarioIDVendedor = _businesFacade.getUserID(usuario.UserName);
+
                 _context.Add(produto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

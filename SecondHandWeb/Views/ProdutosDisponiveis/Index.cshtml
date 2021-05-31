@@ -1,7 +1,7 @@
 ﻿@model SecondHandWeb.Models.ProdutoCategoriaViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Produtos Disponiveis";
 }
 
 <form asp-controller="ProdutosDisponiveis" asp-action="Index" method="get">
@@ -62,7 +62,7 @@
                     @Html.DisplayFor(modelItem => item.DataEntrada)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Categoria.Name)
+                    @Html.DisplayFor(modelItem => item.CategoriaID)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.NomeVendedor)
@@ -71,6 +71,7 @@
                     @Html.DisplayFor(modelItem => item.Imagens)
                 </td>
                 <td>
+                    <a asp-action="Compra" asp-route-id="@item.ProdutoId">Comprar</a>
                     <a asp-action="Details" asp-route-id="@item.ProdutoId">Details</a>
                 </td>
             </tr>

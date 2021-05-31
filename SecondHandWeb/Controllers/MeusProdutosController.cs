@@ -68,23 +68,24 @@ namespace SecondHandWeb.Controllers
         }
 
         [Authorize]
-        // POST: Produtoes/Create
+        // POST: MeusProdutos/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Descricao,Valor,DataEntrada,CategoriaId")] Produto produto)
-        {
-            if (ModelState.IsValid)
-            {
-                var usuario = await _userManager.GetUserAsync(HttpContext.User);
-                produto.UsuarioIDVendedor = _businesFacade.getUserID(usuario.UserName);
+        public async Task<IActionResult> Create([Bind("Name,Descricao,Estado,Valor,DataEntrada,UsuarioIDVendedor,NomeVendedor,CategoriaID")] Produto produto)
+        { 
 
-                _businesFacade.CadNovoProduto(produto);
+            //if (ModelState.IsValid)
+            //{
+                var usuario = await _userManager.GetUserAsync(HttpContext.User);
+                _businesFacade.CadNovoProduto(produto, usuario.UserName);
                 return RedirectToAction(nameof(Index));
-            }
+            //}
+
             ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name", produto.CategoriaID);
             return View(produto);
+
         }
 
         [Authorize]

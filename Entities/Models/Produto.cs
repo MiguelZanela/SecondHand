@@ -45,7 +45,7 @@ namespace Entities.Models
         public String UsuarioIDVendedor { get; set; }
 
         [Required]
-        [Display(Name = "Nome do Vendedor")]
+        [Display(Name = "Email do Vendedor")]
         public String NomeVendedor { get; set; }
 
         [Display(Name = "ID do Usuario Comprador")]

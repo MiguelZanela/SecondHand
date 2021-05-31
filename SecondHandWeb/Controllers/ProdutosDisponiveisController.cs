@@ -37,20 +37,20 @@ namespace SecondHandWeb.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(string ProdutoCategoria, string searchString)
         {
-            var categoriaQuery = _businesFacade.categoriasNomes();
+            //var categoriaQuery = _businesFacade.categoriasNomes();
 
-            /*
+            
             var categoriaQuery = (from m in cntc.Produtos
-                              orderby m.Categoria
+                              orderby m.Categoria.Name
                               select m.Categoria.Name);
-            */
+            
 
-            var produtos = _businesFacade.IQuerDeProdutosDisponiveis();
+            //var produtos = _businesFacade.IQuerDeProdutosDisponiveis();
 
-            /*
+            
             var produtos = from m in cntc.Produtos
                          select m;
-            */
+            
 
 
             if (!string.IsNullOrEmpty(searchString))
@@ -65,14 +65,14 @@ namespace SecondHandWeb.Controllers
 
             var produtoCategoriaVM = new ProdutoCategoriaViewModel
             {
-                Categorias = new SelectList(await categoriaQuery.Distinct().ToListAsync()),
-                Produtos = await produtos.ToListAsync()
+                Categorias = new SelectList( categoriaQuery.Distinct().ToList()),
+                Produtos = produtos.ToList()
             };
 
             return View(produtoCategoriaVM);
         }
 
-        // GET: ProdutosDisponiveis/Details/5
+        // GET: ProdutosDisponiveis/Details/
         [AllowAnonymous]
         public IActionResult Details(long id)
         {
@@ -88,8 +88,26 @@ namespace SecondHandWeb.Controllers
             }
 
             return View(produto);
+        }      
+
+        // GET: ProdutosDisponiveis/Compra/
+        [AllowAnonymous]
+        public IActionResult Compra(long id)
+        {
+            if (id == 0)
+            {
+                return NotFound();
+            }
+
+            var produto = _businesFacade.ItemPorId((long)id);
+            if (produto == null)
+            {
+                return NotFound();
+            }
+
+            return View(produto);
         }
-       
+
         private bool ProdutoExists(long id)
         {
             return _businesFacade.existe(id);
