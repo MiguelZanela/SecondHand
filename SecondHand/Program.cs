@@ -69,7 +69,7 @@ namespace ConsoleTests
             #region Testando todas as consultas da entrega 1
 
             Console.WriteLine("1 - Itens a venda de uma determinada categoria:\n");
-            int cat = 2;
+            String cat = "TV";
             Console.WriteLine("Categoria pesquisada: '{0}'\n", cat);
 
             foreach (Produto p in _bll.ItensPorCategoria(cat))
@@ -82,7 +82,7 @@ namespace ConsoleTests
 
 
             Console.WriteLine("2 - Itens a venda dada uma palavra chave e uma categoria:\n");
-            cat = 2;
+            cat = "TV";
             String palChave = "tv";
             Console.WriteLine("Categoria pesquisada: '{0}', Palavra chave: {1}\n", cat, palChave);
 

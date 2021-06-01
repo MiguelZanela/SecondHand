@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using BLL;
 using Microsoft.AspNetCore.Hosting;
 using Entities.ViewModels;
+using SecondHandWeb.Models;
 
 namespace SecondHandWeb.Controllers
 {
@@ -37,14 +38,26 @@ namespace SecondHandWeb.Controllers
         }
 
         // GET: ADM/NroTotalVendaPeriodo/
-        public async Task<IActionResult> TotalVendaPorPeriodo(DateTime dtIni, DateTime dtFin)
+        public async Task<IActionResult> TotVendPeriodo(DateTime dtIni, DateTime dtFim)
         {
-            if (dtIni > dtFin)
+            if (dtIni > dtFim)
             {
                 return NotFound();
             }
 
-            var TotalVendaPorPeriodo = _businesFacade.TotalVendaPeriodo(dtIni, dtFin);
+            int t = -1;
+            decimal v = -1;
+            foreach (TotalVendaPorPeriodo i in _businesFacade.TotalVendaPeriodo(dtIni, dtFim))
+            {
+                t = i.numVendasPeriodo; 
+                v =  i.valorVendasPeriodo;
+            }
+
+            var TotalVendaPorPeriodo = new TotalVendaPorPeriodoViewModel
+            {
+                numVendasPeriodo = t,
+                valorVendasPeriodo = v                
+            };
 
             return View(TotalVendaPorPeriodo);
         }

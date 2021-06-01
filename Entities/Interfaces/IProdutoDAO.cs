@@ -17,7 +17,7 @@ namespace Entities.Interfaces
         public IQueryable<Produto> IQuerDeProdutosDisponiveis();
 
         //Salva um produto novo no banco
-        public void CadastroNovoProduto(Produto prod, String usuario);
+        public void CadastroNovoProduto(Produto prod);
 
         //Recebe um ID de produto e retorna o mesmo
         public Produto ItemPorId(long ProdutoID);
@@ -32,10 +32,19 @@ namespace Entities.Interfaces
         public List<Produto> ItensDisponiveis();
 
         //relatorio de itens por uma determinada categoria
-        public List<Produto> ItensPorCategoria(int cat);
+        public List<Produto> ItensPorCategoria(String cat);
+
+        //relatorio de itens disponiveis por uma determinada categoria
+        public IQueryable<Produto> ItensPorCategoriaDisponiveis(String cat);
+
+        //recebe uma palavra chave e retorna um produto
+        public List<Produto> ItensPalChav(string palChave);
+
+        //recebe uma palavra chave e retorna produtos disponiveis
+        public IQueryable<Produto> ItensPalChavDisponiveis(string palChave);
 
         //relatorio de itens por uma determinada categoria e palavra
-        public List<Produto> ItensPalChavCat(String palChave, int cat);
+        public List<Produto> ItensPalChavCat(String palChave, String cat);
 
         //relatorio de itens por uma determinada faixa de valores
         public List<Produto> ItensFaixaDeValores(decimal valIni, decimal valFin);
@@ -44,7 +53,7 @@ namespace Entities.Interfaces
         public List<Produto> ItensPorStatusUsu(String usu);
 
         ////relatorio do total de vendas em um determinado periodo de tempo
-        public List<TotalVendaPorPeriodo> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin);
+        public IQueryable<TotalVendaPorPeriodo> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin);
 
         //recebe um produto e salva as modificacoes
         public void editProduto(Produto prod);        

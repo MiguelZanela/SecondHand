@@ -61,10 +61,21 @@ namespace SecondHandWeb.Controllers
 
         [Authorize]
         // GET: MeusProdutos/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+
             ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name");
-            return View();
+
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
+
+            Produto novo = new Produto()
+            {
+                UsuarioIDVendedor = usuario.Id,
+                NomeVendedor = usuario.UserName,
+                DataEntrada = DateTime.Now
+            };
+
+            return View(novo);
         }
 
         [Authorize]
@@ -76,12 +87,11 @@ namespace SecondHandWeb.Controllers
         public async Task<IActionResult> Create([Bind("Name,Descricao,Estado,Valor,DataEntrada,UsuarioIDVendedor,NomeVendedor,CategoriaID")] Produto produto)
         { 
 
-            //if (ModelState.IsValid)
-            //{
-                var usuario = await _userManager.GetUserAsync(HttpContext.User);
-                _businesFacade.CadNovoProduto(produto, usuario.UserName);
+            if (ModelState.IsValid)
+            {
+                _businesFacade.CadNovoProduto(produto);
                 return RedirectToAction(nameof(Index));
-            //}
+            }
 
             ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name", produto.CategoriaID);
             return View(produto);

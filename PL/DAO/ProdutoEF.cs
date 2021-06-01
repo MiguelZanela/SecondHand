@@ -35,12 +35,8 @@ namespace PL.DAO
         }
 
         //recebe um produto novo e salva no bando de dados
-        public void CadastroNovoProduto(Produto prod, String usuarioName)
+        public void CadastroNovoProduto(Produto prod)
         {
-            var user = _context.Users.FirstOrDefault(x => x.UserName.Equals(usuarioName));
-
-            prod.UsuarioIDVendedor = user.Id;
-            prod.NomeVendedor = usuarioName;
             prod.Estado = StatusProduto.Status.Disponivel;
 
             _context.Produtos.Add(prod);
@@ -91,24 +87,55 @@ namespace PL.DAO
         }
 
         //recebe uma categoria e retorna todos os produtos dessa categoria
-        public List<Produto> ItensPorCategoria(int cat)
+        public List<Produto> ItensPorCategoria(String cat)
         {
             var consulta1 = _context.Produtos
-                            .Where(p => p.CategoriaID == cat)
-                            .Select(p => p);
+                            .Where(x => x.Categoria.Name == cat);
 
             return consulta1.ToList();
         }
 
+        //recebe uma categoria e retorna todos os produtos dessa categoria
+        public IQueryable<Produto> ItensPorCategoriaDisponiveis(String cat)
+        {
+            var consulta1 = _context.Produtos
+                            .Where(x => x.Estado == StatusProduto.Status.Disponivel)
+                            .Where(x => x.Categoria.Name == cat)
+                            .Select(p => p);
+
+            return consulta1;
+        }
+
         //recebe uma categoria e uma palavra chave e retorna uma lista desses produtos
-        public List<Produto> ItensPalChavCat(string palChave, int cat)
+        public List<Produto> ItensPalChavCat(string palChave, String cat)
         {
             var consulta2 = _context.Produtos
-                            .Where(p => p.CategoriaID == cat)
+                            .Where(p => p.Categoria.Name == cat)
                             .Where(p => p.Name.ToUpper().Contains(palChave.ToUpper()) || p.Descricao.ToUpper().Contains(palChave.ToUpper()))
                             .Select(p => p);
 
             return consulta2.ToList();
+        }
+
+        //recebe uma palavra chave e retorna um produto
+        public List<Produto> ItensPalChav(string palChave)
+        {
+            var consulta2 = _context.Produtos
+                            .Where(p => p.Name.ToUpper().Contains(palChave.ToUpper()))
+                            .Select(p => p);
+
+            return consulta2.ToList();
+        }
+
+        //recebe uma palavra chave e retorna produtos disponiveis
+        public IQueryable<Produto> ItensPalChavDisponiveis(string palChave)
+        {
+            var consulta2 = _context.Produtos
+                            .Where(p => p.Estado == StatusProduto.Status.Disponivel)
+                            .Where(p => p.Name.ToUpper().Contains(palChave.ToUpper()))
+                            .Select(p => p);
+
+            return consulta2;
         }
 
         //recebe dois valores e retorna uma lista de produtos dentro desses valores
@@ -134,7 +161,7 @@ namespace PL.DAO
 
         //recebe duas datas e retorna o numero de itens vendidos
         //bem como o total da soma do valor desses produtos
-        public List<TotalVendaPorPeriodo> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
+        public IQueryable<TotalVendaPorPeriodo> NroTotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
         {
             var consulta5 = from p in _context.Produtos
                             where p.Estado == StatusProduto.Status.Vendido
@@ -149,7 +176,7 @@ namespace PL.DAO
                                   valorVendasPeriodo = grp.Sum()
                               };            
 
-            return consulta5_1.ToList();
+            return consulta5_1;
         }
         
     }

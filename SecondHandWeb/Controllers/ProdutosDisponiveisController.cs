@@ -22,50 +22,36 @@ namespace SecondHandWeb.Controllers
         private readonly BusinesFacade _businesFacade;
         public readonly UserManager<ApplicationUser> _userManager;
         private IWebHostEnvironment _environment;
-        private readonly SecondHandContext cntc;
 
-        public ProdutosDisponiveisController(BusinesFacade businesFacade, SecondHandContext cn,
-                                   UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
+        public ProdutosDisponiveisController(BusinesFacade businesFacade,
+                                   UserManager<ApplicationUser> userManager, 
+                                   IWebHostEnvironment environment)
         {
             _businesFacade = businesFacade;
             _environment = environment;
             _userManager = userManager;
-            cntc = cn;
         }
 
         // GET: ProdutosDisponiveis
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string ProdutoCategoria, string searchString)
+        public async Task<IActionResult> Index(string ProdutosCategoria, string searchString)
         {
-            //var categoriaQuery = _businesFacade.categoriasNomes();
-
-            
-            var categoriaQuery = (from m in cntc.Produtos
-                              orderby m.Categoria.Name
-                              select m.Categoria.Name);
-            
-
-            //var produtos = _businesFacade.IQuerDeProdutosDisponiveis();
-
-            
-            var produtos = from m in cntc.Produtos
-                         select m;
-            
-
+            var categoriaQuery = _businesFacade.categoriasNomes();
+            var produtos = _businesFacade.IQuerDeProdutosDisponiveis();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                produtos = produtos.Where(s => s.Name.ToUpper().Contains(searchString.ToUpper()));
+                produtos = _businesFacade.ItensPalChavDisponiveis(searchString);
             }
 
-            if (!string.IsNullOrEmpty(ProdutoCategoria))
+            if (!string.IsNullOrEmpty(ProdutosCategoria))
             {
-                produtos = produtos.Where(x => x.Categoria.Name == ProdutoCategoria);
+                produtos = _businesFacade.ItensPorCategoriaDisponiveis(ProdutosCategoria);
             }
 
             var produtoCategoriaVM = new ProdutoCategoriaViewModel
             {
-                Categorias = new SelectList( categoriaQuery.Distinct().ToList()),
+                Categorias = new SelectList(categoriaQuery.Distinct().ToList()),
                 Produtos = produtos.ToList()
             };
 

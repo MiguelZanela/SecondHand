@@ -43,9 +43,9 @@ namespace BLL
         }
 
         //Salva um produto novo no banco
-        public void CadNovoProduto(Produto prod, String usu)
+        public void CadNovoProduto(Produto prod)
         {
-            _ProdutoDAO.CadastroNovoProduto(prod, usu);
+            _ProdutoDAO.CadastroNovoProduto(prod);
         }
 
         //Recebe um id e deleta o produto
@@ -73,15 +73,33 @@ namespace BLL
         }
 
         //relatorio de itens por uma determinada categoria
-        public List<Produto> ItensPorCategoria(int cat)
+        public List<Produto> ItensPorCategoria(String cat)
         {
             return _ProdutoDAO.ItensPorCategoria(cat);
         }
 
+        //relatorio de itens disponiveis por uma determinada categoria
+        public IQueryable<Produto> ItensPorCategoriaDisponiveis(String cat)
+        {
+            return _ProdutoDAO.ItensPorCategoriaDisponiveis(cat);
+        }
+
         //relatorio de itens por uma determinada categoria e palavra
-        public List<Produto> ItensPalChavCat(String palChave, int cat)
+        public List<Produto> ItensPalChavCat(String palChave, String cat)
         {
             return _ProdutoDAO.ItensPalChavCat(palChave, cat);
+        }
+
+        //recebe uma palavra chave e retorna um produto
+        public List<Produto> ItensPalChav(string palChave)
+        {
+            return _ProdutoDAO.ItensPalChav(palChave);
+        }
+
+        //recebe uma palavra chave e retorna produtos disponiveis
+        public IQueryable<Produto> ItensPalChavDisponiveis(string palChave)
+        {
+            return _ProdutoDAO.ItensPalChavDisponiveis(palChave);
         }
 
         //relatorio de itens por uma determinada faixa de valores
@@ -96,8 +114,8 @@ namespace BLL
             return _ProdutoDAO.ItensPorStatusUsu(usu);
         }
 
-        ////relatorio do total de vendas em um determinado periodo de tempo
-        public List<TotalVendaPorPeriodo> TotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
+        //relatorio do total de vendas em um determinado periodo de tempo
+        public IQueryable<TotalVendaPorPeriodo> TotalVendaPeriodo(DateTime dtIni, DateTime dtFin)
         {
             return _ProdutoDAO.NroTotalVendaPeriodo(dtIni, dtFin);
         }
