@@ -55,8 +55,11 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ProdutoId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (Model.Estado != Entities.Models.StatusProduto.Status.Vendido)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.ProdutoId">Edit</a>
+    }
+<a asp-action="Index">Back to List</a>
 </div>
 
 
@@ -64,7 +67,7 @@
     <h3>Imagens</h3>
     <div class="col-md-4">
 
-        
+
         @foreach (Entities.Models.Imagem im in Model.Imagens)
         {
 
@@ -76,24 +79,3 @@
 
     </div>
 </div>
-
-@using (Html.BeginForm("LoadFiles", "MeusProdutos",
-                            FormMethod.Post,
-                              new { enctype = "multipart/form-data" }))
-{
-    <input type="hidden" asp-for="ProdutoId" />
-    <dl>
-        <dt>
-            <label for="FileUpload_FormFile">Selecionar arquivos</label>
-        </dt>
-        <dd>
-            <input id="files" type="file"
-                   name="files" multiple />
-        </dd>
-    </dl>
-
-    <input type="submit" value="Enviar arquivos" class="btn btn-primary" />
-
-    <div style="margin-top:15px">
-        <output name="result"></output>
-    </div>}

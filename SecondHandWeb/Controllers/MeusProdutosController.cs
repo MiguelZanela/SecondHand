@@ -112,6 +112,7 @@ namespace SecondHandWeb.Controllers
             {
                 return NotFound();
             }
+            ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name");
             return View(produto);
         }
 
@@ -147,6 +148,7 @@ namespace SecondHandWeb.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name");
             return View(produto);
         }
 
