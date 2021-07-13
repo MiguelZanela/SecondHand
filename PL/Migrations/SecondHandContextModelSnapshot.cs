@@ -68,6 +68,9 @@ namespace PL.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int>("NroAvaliacoes")
+                        .HasColumnType("int");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -76,6 +79,42 @@ namespace PL.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("ProdutosAVenda")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosAguardandoApVenda")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosBloqueado")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosComVendaNegada")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosComprados")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosCompradosEmRotaDeEntrega")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosCompradosEntregue")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosEmRotaDeEntrega")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosEntregue")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutosVendido")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReputacaoFinal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReputacaoTotal")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -140,6 +179,33 @@ namespace PL.Migrations
                     b.ToTable("Imagem");
                 });
 
+            modelBuilder.Entity("Entities.Models.Pergunta", b =>
+                {
+                    b.Property<long>("PerguntaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Perguntas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ProdutoId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Respostas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StatusPergunta")
+                        .HasColumnType("int");
+
+                    b.HasKey("PerguntaId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.ToTable("Perguntas");
+                });
+
             modelBuilder.Entity("Entities.Models.Produto", b =>
                 {
                     b.Property<long>("ProdutoId")
@@ -164,6 +230,12 @@ namespace PL.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("EnderecoComprador")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnderecoRemetente")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
@@ -175,11 +247,17 @@ namespace PL.Migrations
                     b.Property<string>("NomeComprador")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NomeEntregador")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NomeVendedor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioIDComprador")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsuarioIDEntregador")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioIDVendedor")
@@ -344,6 +422,17 @@ namespace PL.Migrations
                     b.Navigation("Produto");
                 });
 
+            modelBuilder.Entity("Entities.Models.Pergunta", b =>
+                {
+                    b.HasOne("Entities.Models.Produto", "Produto")
+                        .WithMany("Pergunta")
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+                });
+
             modelBuilder.Entity("Entities.Models.Produto", b =>
                 {
                     b.HasOne("Entities.Models.ApplicationUser", null)
@@ -423,6 +512,8 @@ namespace PL.Migrations
             modelBuilder.Entity("Entities.Models.Produto", b =>
                 {
                     b.Navigation("Imagens");
+
+                    b.Navigation("Pergunta");
                 });
 #pragma warning restore 612, 618
         }

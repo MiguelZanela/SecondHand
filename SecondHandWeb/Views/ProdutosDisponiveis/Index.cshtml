@@ -4,23 +4,35 @@
     ViewData["Title"] = "Produtos Disponiveis";
 }
 
-<form asp-controller="ProdutosDisponiveis" asp-action="Index" method="get">
-    <p>
-
-        <select asp-for="ProdutosCategoria" asp-items="Model.Categorias">
-            <option value="">Todos</option>
-        </select>
-
-        Nome do Produto: <input type="text" asp-for="SearchString" />
-        <input type="submit" value="Filter" />
-    </p>
+<form asp-controller="ProdutosDisponiveis" asp-action="Index" method="get" class="bg-warning">
+    <table class="table">
+        <tr>
+            <td>
+                Nome do Produto: <input type="text" asp-for="SearchString" />
+            </td>
+            <td>
+                Categorias: <select asp-for="ProdutosCategoria" asp-items="Model.Categorias">
+                    <option value="">Todos</option>
+                </select>
+            </td>
+            <td>
+                Valor Inicial: <input type="text" asp-for="ValIni" />
+            </td>
+            <td>
+                Valor Limite: <input type="text" asp-for="ValFinal" />
+            </td>
+            <td><br>
+                <input type="submit" value="Filtrar" class="btn btn-danger text-warning" />
+            </td>
+        </tr>
+    </table>
 </form>
 
 <center><h1>Produtos Disponiveis</h1></center>
 
-<table class="table">
+<table class="table" align="center" border="1">
     <thead>
-        <tr>
+        <tr class="bg-danger text-warning" align="center">
             <th>
                 @Html.DisplayNameFor(model => model.Produtos[0].Name)
             </th>
@@ -40,7 +52,7 @@
                 @Html.DisplayNameFor(model => model.Produtos[0].NomeVendedor)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Produtos[0].Imagens)
+                @Html.DisplayNameFor(model => model.Produtos[0].EnderecoRemetente)
             </th>
             <th></th>
         </tr>
@@ -62,17 +74,29 @@
                     @Html.DisplayFor(modelItem => item.DataEntrada)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CategoriaID)
+                    @Html.DisplayFor(modelItem => item.Categoria.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.NomeVendedor)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Imagens)
+                    @Html.DisplayFor(modelItem => item.EnderecoRemetente)
                 </td>
-                <td>                    
-                    <a asp-action="Compra" asp-route-id="@item.ProdutoId">Comprar</a>
-                    <a asp-action="Details" asp-route-id="@item.ProdutoId">Details</a>
+                <td>
+                    @if (ViewBag.user != null)
+                    {
+                        @if (item.UsuarioIDVendedor != ViewBag.user.Id)
+                        {
+                            <div>
+                                <a asp-action="Details" asp-route-id="@item.ProdutoId" class="btn btn-danger text-warning">Comprar</a>
+                                <hr />
+                            </div>                        
+                        }
+                    }
+                    <div>
+                        <a asp-action="Details" asp-route-id="@item.ProdutoId" class="btn btn-danger text-warning">Detalhes</a>
+                        <hr />
+                    </div>
                 </td>
             </tr>
         }

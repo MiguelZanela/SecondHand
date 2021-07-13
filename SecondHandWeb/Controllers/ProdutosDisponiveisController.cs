@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using SecondHandWeb.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SecondHandWeb.Controllers
 {
@@ -31,22 +32,29 @@ namespace SecondHandWeb.Controllers
             _environment = environment;
             _userManager = userManager;
         }
+                
 
         // GET: ProdutosDisponiveis
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string ProdutosCategoria, string searchString)
+        public async Task<IActionResult> Index(string ProdutosCategoria, string searchString,
+                                               decimal ValIni, decimal ValFinal)
         {
             var categoriaQuery = _businesFacade.categoriasNomes();
             var produtos = _businesFacade.IQuerDeProdutosDisponiveis();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                produtos = _businesFacade.ItensPalChavDisponiveis(searchString);
+                produtos = _businesFacade.IqueyItensPalChav(searchString, produtos);
             }
 
             if (!string.IsNullOrEmpty(ProdutosCategoria))
             {
-                produtos = _businesFacade.ItensPorCategoriaDisponiveis(ProdutosCategoria);
+                produtos = _businesFacade.IqueryItensPorCategoria(ProdutosCategoria, produtos);
+            }
+
+            if(ValIni != 0 || ValFinal != 0)
+            {
+                produtos = _businesFacade.IqueryItensFaixaDeValores(ValIni, ValFinal, produtos);
             }
 
             var produtoCategoriaVM = new ProdutoCategoriaViewModel
@@ -55,12 +63,19 @@ namespace SecondHandWeb.Controllers
                 Produtos = produtos.ToList()
             };
 
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
+
+            if (usuario != null)
+            {
+                ViewData["user"] = usuario;
+            }
+
             return View(produtoCategoriaVM);
         }
 
         // GET: ProdutosDisponiveis/Details/
         [AllowAnonymous]
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             if (id == 0)
             {
@@ -73,25 +88,59 @@ namespace SecondHandWeb.Controllers
                 return NotFound();
             }
 
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
+            if (usuario != null)
+            {
+                ViewData["usuario"] = usuario;
+            }              
+
             return View(produto);
-        }      
+        }
 
         // GET: ProdutosDisponiveis/Compra/
-        [AllowAnonymous]
-        public IActionResult Compra(long id)
+        [Authorize]
+        public async Task<IActionResult> Compra(long? id)
         {
-            if (id == 0)
+            if (id == null)
+            {
+                return NotFound();
+            }
+            //Pegando o usuário logado:
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
+
+            Boolean prod = _businesFacade.VendaProduto((long)id, usuario.UserName);
+
+            if (prod == false)
             {
                 return NotFound();
             }
 
-            var produto = _businesFacade.ItemPorId((long)id);
-            if (produto == null)
+            return View(_businesFacade.ItemPorId((long)id));
+        }
+
+        public async Task<IActionResult> PerfilVendedor(long? id)
+        {
+            if (id == null)
             {
                 return NotFound();
             }
 
-            return View(produto);
+            var userName = _businesFacade.ItemPorId((long)id).NomeVendedor;
+
+            var perfilVendedor = _businesFacade.vendasPerfil(userName);
+
+            ViewData["prodID"] = (long)id;
+            return View(perfilVendedor);
+        }
+
+        //recebe uma pergunta e id de produto e salva a pergunta
+        public async Task<IActionResult> SalvaPergunta(long id, String per)
+        {            
+
+            _businesFacade.SalvaPergunta(id, per);
+
+            return RedirectToAction("Details", "ProdutosDisponiveis", new { Id = id });
+
         }
 
         private bool ProdutoExists(long id)
@@ -121,6 +170,19 @@ namespace SecondHandWeb.Controllers
             else
             {
                 return NotFound();
+            }
+        }
+
+        public Pergunta GetPergunta(long id)
+        {
+            Pergunta per = _businesFacade.GetPergunta(id);
+            if (per != null)
+            {
+                return per;
+            }
+            else
+            {
+                return null;
             }
         }
 

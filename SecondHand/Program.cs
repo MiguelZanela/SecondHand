@@ -1,6 +1,7 @@
 ﻿using BLL;
 using Entities.Interfaces;
 using Entities.Models;
+using Entities.Models.Enums;
 using Entities.ViewModels;
 using Ninject;
 using PL.Context;
@@ -34,7 +35,7 @@ namespace ConsoleTests
                 Descricao = "produto para testar a criação no bando de dados",
                 CategoriaID = 1,
                 DataEntrada = new DateTime(2020, 04, 01),
-                Estado = StatusProduto.Status.Disponivel,
+                Estado = StatusProduto.Disponivel,
                 Valor = 200.0m,
                 UsuarioIDVendedor = "c0f2a95a-d441-423f-b369-746d098c18a9"
             };
@@ -100,13 +101,13 @@ namespace ConsoleTests
             decimal valFin = 500.0m;
             Console.WriteLine("Faixa de valores\nDe: [{0}] a: [{1}]\n", valIni, valFin);
 
-            foreach (Produto p in _bll.ItensFaixaDeValores(valIni, valFin))
+            /*foreach (Produto p in _bll.ItensFaixaDeValores(valIni, valFin))
             {
                 Console.WriteLine("Produto: {0}\nDescrição: {1}\nStatus: {2}\nValor: {3}\n" +
                                     "Categoria: {4}\n",
                                     p.Name, p.Descricao, p.Estado, p.Valor, p.Categoria);
             }
-            Console.WriteLine("\n\n");
+            Console.WriteLine("\n\n");*/
 
 
             Console.WriteLine("4 - Itens anunciados por um determinado vendedor agrupados pelo status da venda\n");

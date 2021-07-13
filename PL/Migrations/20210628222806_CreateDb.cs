@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PL.Migrations
 {
-    public partial class SecondHand : Migration
+    public partial class CreateDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -30,6 +30,19 @@ namespace PL.Migrations
                     Nome = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     CEP = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true),
                     Endereco = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ReputacaoFinal = table.Column<int>(type: "int", nullable: false),
+                    ReputacaoTotal = table.Column<int>(type: "int", nullable: false),
+                    NroAvaliacoes = table.Column<int>(type: "int", nullable: false),
+                    ProdutosAVenda = table.Column<int>(type: "int", nullable: false),
+                    ProdutosAguardandoApVenda = table.Column<int>(type: "int", nullable: false),
+                    ProdutosVendido = table.Column<int>(type: "int", nullable: false),
+                    ProdutosEmRotaDeEntrega = table.Column<int>(type: "int", nullable: false),
+                    ProdutosEntregue = table.Column<int>(type: "int", nullable: false),
+                    ProdutosBloqueado = table.Column<int>(type: "int", nullable: false),
+                    ProdutosComprados = table.Column<int>(type: "int", nullable: false),
+                    ProdutosCompradosEmRotaDeEntrega = table.Column<int>(type: "int", nullable: false),
+                    ProdutosCompradosEntregue = table.Column<int>(type: "int", nullable: false),
+                    ProdutosComVendaNegada = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -183,8 +196,12 @@ namespace PL.Migrations
                     DataVenda = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UsuarioIDVendedor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NomeVendedor = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EnderecoRemetente = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UsuarioIDComprador = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NomeComprador = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EnderecoComprador = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioIDEntregador = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NomeEntregador = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoriaID = table.Column<int>(type: "int", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -220,6 +237,28 @@ namespace PL.Migrations
                     table.PrimaryKey("PK_Imagem", x => x.ImagemId);
                     table.ForeignKey(
                         name: "FK_Imagem_Produtos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Produtos",
+                        principalColumn: "ProdutoId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Perguntas",
+                columns: table => new
+                {
+                    PerguntaId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Perguntas = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Respostas = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StatusPergunta = table.Column<int>(type: "int", nullable: false),
+                    ProdutoId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Perguntas", x => x.PerguntaId);
+                    table.ForeignKey(
+                        name: "FK_Perguntas_Produtos_ProdutoId",
                         column: x => x.ProdutoId,
                         principalTable: "Produtos",
                         principalColumn: "ProdutoId",
@@ -271,6 +310,11 @@ namespace PL.Migrations
                 column: "ProdutoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Perguntas_ProdutoId",
+                table: "Perguntas",
+                column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Produtos_ApplicationUserId",
                 table: "Produtos",
                 column: "ApplicationUserId");
@@ -300,6 +344,9 @@ namespace PL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Imagem");
+
+            migrationBuilder.DropTable(
+                name: "Perguntas");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

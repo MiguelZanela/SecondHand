@@ -1,51 +1,77 @@
 ﻿ using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Entities.Models;
-using PL.Context;
 using BLL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
+using SecondHandWeb.Models;
 
 namespace SecondHandWeb.Controllers
 {
     public class MeusProdutosController : Controller
     {
         private readonly BusinesFacade _businesFacade;
-        private readonly SecondHandContext _ct;
         public readonly UserManager<ApplicationUser> _userManager;
         private IWebHostEnvironment _environment;
 
-        public MeusProdutosController(BusinesFacade businesFacade, SecondHandContext ff,
-                                   UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
+        public MeusProdutosController(BusinesFacade businesFacade,
+                                   UserManager<ApplicationUser> userManager, 
+                                   IWebHostEnvironment environment)
         {           
             _businesFacade = businesFacade;
             _environment = environment;
             _userManager = userManager;
-            _ct = ff;
         }
 
         [Authorize]
         // GET: MeusProdutos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string ProdutosCategoria, string searchString,
+                                               decimal ValIni, decimal ValFinal)
         {
             var usuario = await _userManager.GetUserAsync(HttpContext.User);
-            String usu = _businesFacade.getUserID(usuario.UserName);
-            return View(_businesFacade.ItensPorStatusUsu(usu));
-        }
+            var categoriaQuery = _businesFacade.categoriasNomes();
+            var produtos = _businesFacade.IqueryItensPorStatusUsu(usuario.Id);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                produtos = _businesFacade.IqueyItensPalChav(searchString, produtos);
+            }
+
+            if (!string.IsNullOrEmpty(ProdutosCategoria))
+            {
+                produtos = _businesFacade.IqueryItensPorCategoria(ProdutosCategoria, produtos);
+            }
+
+            if (ValIni != 0 || ValFinal != 0)
+            {
+                produtos = _businesFacade.IqueryItensFaixaDeValores(ValIni, ValFinal, produtos);
+            }
+
+            var produtoCategoriaVM = new ProdutoCategoriaViewModel
+            {
+                Categorias = new SelectList(categoriaQuery.Distinct().ToList()),
+                Produtos = produtos.ToList()
+            };
+
+            if (usuario != null)
+            {
+                ViewData["usuario"] = usuario;
+            }
+
+            return View(produtoCategoriaVM);
+        }        
 
         [Authorize]
         // GET: MeusProdutos/Details/5
-        [AllowAnonymous]
-        public IActionResult Details(long id)
+        public IActionResult Details(long? id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -72,6 +98,7 @@ namespace SecondHandWeb.Controllers
             {
                 UsuarioIDVendedor = usuario.Id,
                 NomeVendedor = usuario.UserName,
+                EnderecoRemetente = usuario.Endereco,
                 DataEntrada = DateTime.Now
             };
 
@@ -84,7 +111,7 @@ namespace SecondHandWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Descricao,Estado,Valor,DataEntrada,UsuarioIDVendedor,NomeVendedor,CategoriaID")] Produto produto)
+        public async Task<IActionResult> Create([Bind("Name,Descricao,Estado,Valor,DataEntrada,UsuarioIDVendedor,NomeVendedor,EnderecoRemetente,CategoriaID")] Produto produto)
         { 
 
             if (ModelState.IsValid)
@@ -99,62 +126,8 @@ namespace SecondHandWeb.Controllers
         }
 
         [Authorize]
-        // GET: MeusProdutos/Edit/5
-        public async Task<IActionResult> Edit(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var produto = _businesFacade.ItemPorId((long)id);
-            if (produto == null)
-            {
-                return NotFound();
-            }
-            ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name");
-            return View(produto);
-        }
-
-        [Authorize]
-        // POST: MeusProdutos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ProdutoId,Name,Descricao,Estado,Valor,DataEntrada,DataVenda,UsuarioID,Categoria")] Produto produto)
-        {
-            if (id != produto.ProdutoId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _businesFacade.editProduto(produto);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProdutoExists(produto.ProdutoId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CategoriaName"] = new SelectList(_businesFacade.categoriasIEnumerable(), "CategoriaId", "Name");
-            return View(produto);
-        }
-
-        [Authorize]
-        // GET: MeusProdutos/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        //GET: MeusProdutos/ResponderCompra
+        public async Task<IActionResult> ResponderCompra(long? id)
         {
             if (id == null)
             {
@@ -167,22 +140,56 @@ namespace SecondHandWeb.Controllers
                 return NotFound();
             }
 
-            return View(produto);
+            return View(produto);            
         }
 
         [Authorize]
-        // POST: MeusProdutos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        //MeusProdutos/AceitarCompra
+        public async Task<IActionResult> AceitarCompra(long? id)
         {
-            _businesFacade.deletaProduto(id);
-            return RedirectToAction(nameof(Index));
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var produto = _businesFacade.CompradoAceitouVendaProduto((long)id);
+            if (produto == false)
+            {
+                return NotFound();
+            }
+
+            return View(_businesFacade.ItemPorId((long)id));
         }
 
-        private bool ProdutoExists(long id)
+        [Authorize]
+        //MeusProdutos/NegarCompra
+        public async Task<IActionResult> NegarCompra(long? id)
         {
-            return _businesFacade.existe(id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var usuario = await _userManager.GetUserAsync(HttpContext.User);
+
+            var produto = _businesFacade.CompradoNegouVendaProduto((long)id);
+            var rep = _businesFacade.AvaliaVendedorCompraNegada(usuario.UserName);
+
+            if (produto == true && rep == true )
+            {
+                return View(_businesFacade.ItemPorId((long)id));
+            }
+
+            return NotFound();
+        }
+
+        //recebe uma resposta e o id de uma pergunta e salva a resposta
+        public async Task<IActionResult> SalvaResposta(long idPer, String res, long idProd)
+        {
+
+            _businesFacade.SalvaResposta(idPer, res);
+
+            return RedirectToAction("Details", "MeusProdutos", new { Id = idProd });
+
         }
 
         //dados do usuario
